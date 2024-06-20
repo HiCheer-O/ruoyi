@@ -1,32 +1,39 @@
 package com.ruoyi.system.domain.vo;
 
 import com.ruoyi.common.utils.StringUtils;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 路由显示信息
  * 
  * @author ruoyi
  */
+@ApiModel(value = "MetaVo", description = "路由显示信息对象")
 public class MetaVo
 {
     /**
      * 设置该路由在侧边栏和面包屑中展示的名字
      */
+    @ApiModelProperty("设置该路由在侧边栏和面包屑中展示的名字")
     private String title;
 
     /**
      * 设置该路由的图标，对应路径src/assets/icons/svg
      */
+    @ApiModelProperty("设置该路由的图标，对应路径src/assets/icons/svg")
     private String icon;
 
     /**
      * 设置为true，则不会被 <keep-alive>缓存
      */
+    @ApiModelProperty("设置为true，则不会被 <keep-alive>缓存")
     private boolean noCache;
 
     /**
      * 内链地址（http(s)://开头）
      */
+    @ApiModelProperty("内链地址（http(s)://开头）")
     private String link;
 
     public MetaVo()

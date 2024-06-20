@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +29,7 @@ import com.ruoyi.system.service.ISysDeptService;
  * 
  * @author ruoyi
  */
+@Api(tags = "部门信息控制器")
 @RestController
 @RequestMapping("/system/dept")
 public class SysDeptController extends BaseController
@@ -37,9 +40,10 @@ public class SysDeptController extends BaseController
     /**
      * 获取部门列表
      */
+    @ApiOperation("获取部门列表")
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list")
-    public AjaxResult list(SysDept dept)
+    public AjaxResult list(@ApiParam("部门对象") SysDept dept)
     {
         List<SysDept> depts = deptService.selectDeptList(dept);
         return success(depts);
@@ -48,9 +52,13 @@ public class SysDeptController extends BaseController
     /**
      * 查询部门列表（排除节点）
      */
+    @ApiOperation("查询部门列表（排除节点）")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "deptId", value = "部门 ID", dataType = "Long", paramType = "path", dataTypeClass = Long.class)
+    })
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list/exclude/{deptId}")
-    public AjaxResult excludeChild(@PathVariable(value = "deptId", required = false) Long deptId)
+    public AjaxResult excludeChild(@ApiParam("部门 ID") @PathVariable(value = "deptId", required = false) Long deptId)
     {
         List<SysDept> depts = deptService.selectDeptList(new SysDept());
         depts.removeIf(d -> d.getDeptId().intValue() == deptId || ArrayUtils.contains(StringUtils.split(d.getAncestors(), ","), deptId + ""));
@@ -60,9 +68,13 @@ public class SysDeptController extends BaseController
     /**
      * 根据部门编号获取详细信息
      */
+    @ApiOperation("根据部门编号获取详细信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "deptId", value = "部门 ID", dataType = "Long", paramType = "path", dataTypeClass = Long.class)
+    })
     @PreAuthorize("@ss.hasPermi('system:dept:query')")
     @GetMapping(value = "/{deptId}")
-    public AjaxResult getInfo(@PathVariable Long deptId)
+    public AjaxResult getInfo(@ApiParam(" 部门 ID") @PathVariable Long deptId)
     {
         deptService.checkDeptDataScope(deptId);
         return success(deptService.selectDeptById(deptId));
@@ -71,10 +83,11 @@ public class SysDeptController extends BaseController
     /**
      * 新增部门
      */
+    @ApiOperation("新增部门")
     @PreAuthorize("@ss.hasPermi('system:dept:add')")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Validated @RequestBody SysDept dept)
+    public AjaxResult add(@ApiParam("部门对象") @Validated @RequestBody SysDept dept)
     {
         if (!deptService.checkDeptNameUnique(dept))
         {
@@ -87,10 +100,11 @@ public class SysDeptController extends BaseController
     /**
      * 修改部门
      */
+    @ApiOperation("修改部门")
     @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@Validated @RequestBody SysDept dept)
+    public AjaxResult edit(@ApiParam("部门对象") @Validated @RequestBody SysDept dept)
     {
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
@@ -113,10 +127,14 @@ public class SysDeptController extends BaseController
     /**
      * 删除部门
      */
+    @ApiOperation("")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "deptId", value = "部门 ID", dataType = "Long", paramType = "path", dataTypeClass = Long.class)
+    })
     @PreAuthorize("@ss.hasPermi('system:dept:remove')")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptId}")
-    public AjaxResult remove(@PathVariable Long deptId)
+    public AjaxResult remove(@ApiParam("部门 ID") @PathVariable Long deptId)
     {
         if (deptService.hasChildByDeptId(deptId))
         {

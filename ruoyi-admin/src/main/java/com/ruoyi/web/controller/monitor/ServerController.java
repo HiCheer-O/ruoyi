@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.monitor;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +14,12 @@ import com.ruoyi.framework.web.domain.Server;
  * 
  * @author ruoyi
  */
+@Api(tags = "服务器监控控制器")
 @RestController
 @RequestMapping("/monitor/server")
 public class ServerController
 {
+    @ApiOperation("获取信息")
     @PreAuthorize("@ss.hasPermi('monitor:server:list')")
     @GetMapping()
     public AjaxResult getInfo() throws Exception

@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import com.ruoyi.system.service.ISysUserService;
  * 
  * @author ruoyi
  */
+@Api(tags = "个人信息 业务处理控制器")
 @RestController
 @RequestMapping("/system/user/profile")
 public class SysProfileController extends BaseController
@@ -41,6 +43,7 @@ public class SysProfileController extends BaseController
     /**
      * 个人信息
      */
+    @ApiOperation("个人信息")
     @GetMapping
     public AjaxResult profile()
     {
@@ -55,9 +58,10 @@ public class SysProfileController extends BaseController
     /**
      * 修改用户
      */
+    @ApiOperation("修改用户")
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult updateProfile(@RequestBody SysUser user)
+    public AjaxResult updateProfile(@ApiParam("用户对象") @RequestBody SysUser user)
     {
         LoginUser loginUser = getLoginUser();
         SysUser currentUser = loginUser.getUser();
@@ -85,6 +89,11 @@ public class SysProfileController extends BaseController
     /**
      * 重置密码
      */
+    @ApiOperation("重置密码")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPassword", value = "旧密码", dataType = "String", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "newPassword", value = "新密码", dataType = "String", dataTypeClass = String.class)
+    })
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
     public AjaxResult updatePwd(String oldPassword, String newPassword)
@@ -114,6 +123,10 @@ public class SysProfileController extends BaseController
     /**
      * 头像上传
      */
+    @ApiOperation("头像上传")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "avatarfile", value = "文件对象", dataType = "MultipartFile", dataTypeClass = MultipartFile.class)
+    })
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
     public AjaxResult avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception

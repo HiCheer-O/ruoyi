@@ -26,5 +26,6 @@ public class RuoYiApplication
                 " |  | \\ `'   /|   `-'  /           \n" +
                 " |  |  \\    /  \\      /           \n" +
                 " ''-'   `'-'    `-..-'              ");
+        System.err.println("接口文档地址：" + "http://localhost:8080/doc.html#/home");
     }
 }

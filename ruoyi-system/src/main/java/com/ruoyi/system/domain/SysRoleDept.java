@@ -1,5 +1,7 @@
 package com.ruoyi.system.domain;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -8,12 +10,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * 
  * @author ruoyi
  */
+@ApiModel(value = "SysRoleDept", description = "角色和部门关联对象")
 public class SysRoleDept
 {
     /** 角色ID */
+    @ApiModelProperty("角色ID")
     private Long roleId;
     
     /** 部门ID */
+    @ApiModelProperty("部门ID")
     private Long deptId;
 
     public Long getRoleId()

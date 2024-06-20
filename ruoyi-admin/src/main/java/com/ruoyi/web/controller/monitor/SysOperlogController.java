@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.monitor;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import com.ruoyi.system.service.ISysOperLogService;
  * 
  * @author ruoyi
  */
+@Api(tags = "操作日志记录控制器")
 @RestController
 @RequestMapping("/monitor/operlog")
 public class SysOperlogController extends BaseController
@@ -31,33 +34,40 @@ public class SysOperlogController extends BaseController
     @Autowired
     private ISysOperLogService operLogService;
 
+    @ApiOperation("操作日志列表")
     @PreAuthorize("@ss.hasPermi('monitor:operlog:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SysOperLog operLog)
+    public TableDataInfo list(@ApiParam("操作日志对象") SysOperLog operLog)
     {
         startPage();
         List<SysOperLog> list = operLogService.selectOperLogList(operLog);
         return getDataTable(list);
     }
 
+    @ApiOperation("操作日志导出")
     @Log(title = "操作日志", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('monitor:operlog:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, SysOperLog operLog)
+    public void export(HttpServletResponse response, @ApiParam("操作日志对象") SysOperLog operLog)
     {
         List<SysOperLog> list = operLogService.selectOperLogList(operLog);
         ExcelUtil<SysOperLog> util = new ExcelUtil<SysOperLog>(SysOperLog.class);
         util.exportExcel(response, list, "操作日志");
     }
 
+    @ApiOperation("操作日志移除")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "operIds", value = "操作日志IDs", dataType = " Long[]", dataTypeClass =  Long[].class)
+    })
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
     @PreAuthorize("@ss.hasPermi('monitor:operlog:remove')")
     @DeleteMapping("/{operIds}")
-    public AjaxResult remove(@PathVariable Long[] operIds)
+    public AjaxResult remove(@ApiParam("操作日志IDs") @PathVariable Long[] operIds)
     {
         return toAjax(operLogService.deleteOperLogByIds(operIds));
     }
 
+    @ApiOperation("操作日志全部删除")
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
     @PreAuthorize("@ss.hasPermi('monitor:operlog:remove')")
     @DeleteMapping("/clean")

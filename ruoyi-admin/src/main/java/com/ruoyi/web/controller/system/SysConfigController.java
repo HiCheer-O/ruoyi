@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -27,6 +29,7 @@ import com.ruoyi.system.service.ISysConfigService;
  * 
  * @author ruoyi
  */
+@Api(tags = "参数配置控制器")
 @RestController
 @RequestMapping("/system/config")
 public class SysConfigController extends BaseController
@@ -37,9 +40,10 @@ public class SysConfigController extends BaseController
     /**
      * 获取参数配置列表
      */
+    @ApiOperation("获取参数配置列表")
     @PreAuthorize("@ss.hasPermi('system:config:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SysConfig config)
+    public TableDataInfo list(@ApiParam("配置对象") SysConfig config)
     {
         startPage();
         List<SysConfig> list = configService.selectConfigList(config);
@@ -47,9 +51,10 @@ public class SysConfigController extends BaseController
     }
 
     @Log(title = "参数管理", businessType = BusinessType.EXPORT)
+    @ApiOperation("参数管理导出")
     @PreAuthorize("@ss.hasPermi('system:config:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, SysConfig config)
+    public void export(HttpServletResponse response, @ApiParam("配置对象") SysConfig config)
     {
         List<SysConfig> list = configService.selectConfigList(config);
         ExcelUtil<SysConfig> util = new ExcelUtil<SysConfig>(SysConfig.class);
@@ -59,9 +64,13 @@ public class SysConfigController extends BaseController
     /**
      * 根据参数编号获取详细信息
      */
+    @ApiOperation("根据参数编号获取详细信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "configId", value = "配置 ID", dataType = "Long", paramType = "path", dataTypeClass = Long.class)
+    })
     @PreAuthorize("@ss.hasPermi('system:config:query')")
     @GetMapping(value = "/{configId}")
-    public AjaxResult getInfo(@PathVariable Long configId)
+    public AjaxResult getInfo(@ApiParam("配置 ID") @PathVariable Long configId)
     {
         return success(configService.selectConfigById(configId));
     }
@@ -69,8 +78,12 @@ public class SysConfigController extends BaseController
     /**
      * 根据参数键名查询参数值
      */
+    @ApiOperation("根据参数键名查询参数值")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "configKey", value = "配置 Key", dataType = "String", paramType = "path", dataTypeClass = String.class)
+    })
     @GetMapping(value = "/configKey/{configKey}")
-    public AjaxResult getConfigKey(@PathVariable String configKey)
+    public AjaxResult getConfigKey(@ApiParam(" 配置 Key") @PathVariable String configKey)
     {
         return success(configService.selectConfigByKey(configKey));
     }
@@ -78,10 +91,11 @@ public class SysConfigController extends BaseController
     /**
      * 新增参数配置
      */
+    @ApiOperation("新增参数配置")
     @PreAuthorize("@ss.hasPermi('system:config:add')")
     @Log(title = "参数管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Validated @RequestBody SysConfig config)
+    public AjaxResult add(@ApiParam("配置对象") @Validated @RequestBody SysConfig config)
     {
         if (!configService.checkConfigKeyUnique(config))
         {
@@ -94,10 +108,11 @@ public class SysConfigController extends BaseController
     /**
      * 修改参数配置
      */
+    @ApiOperation("修改参数配置")
     @PreAuthorize("@ss.hasPermi('system:config:edit')")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@Validated @RequestBody SysConfig config)
+    public AjaxResult edit(@ApiParam("配置对象") @Validated @RequestBody SysConfig config)
     {
         if (!configService.checkConfigKeyUnique(config))
         {
@@ -110,10 +125,14 @@ public class SysConfigController extends BaseController
     /**
      * 删除参数配置
      */
+    @ApiOperation("删除参数配置")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "configIds", value = "配置 IDs", dataType = "Long[]", paramType = "path", dataTypeClass = Long[].class)
+    })
     @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{configIds}")
-    public AjaxResult remove(@PathVariable Long[] configIds)
+    public AjaxResult remove(@ApiParam("配置 IDs") @PathVariable Long[] configIds)
     {
         configService.deleteConfigByIds(configIds);
         return success();
@@ -122,6 +141,7 @@ public class SysConfigController extends BaseController
     /**
      * 刷新参数缓存
      */
+    @ApiOperation("刷新参数缓存")
     @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @Log(title = "参数管理", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")

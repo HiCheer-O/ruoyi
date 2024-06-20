@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +30,7 @@ import com.ruoyi.system.service.ISysUserOnlineService;
  * 
  * @author ruoyi
  */
+@Api(tags = "在线用户监控控制器")
 @RestController
 @RequestMapping("/monitor/online")
 public class SysUserOnlineController extends BaseController
@@ -38,9 +41,14 @@ public class SysUserOnlineController extends BaseController
     @Autowired
     private RedisCache redisCache;
 
+    @ApiOperation("列表查询")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "ipaddr", value = "ip地址", dataType = "String", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "userName", value = "用户名称", dataType = "String", dataTypeClass = String.class)
+    })
     @PreAuthorize("@ss.hasPermi('monitor:online:list')")
     @GetMapping("/list")
-    public TableDataInfo list(String ipaddr, String userName)
+    public TableDataInfo list(@ApiParam("ip地址") String ipaddr, @ApiParam("用户名称") String userName)
     {
         Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         List<SysUserOnline> userOnlineList = new ArrayList<SysUserOnline>();
@@ -72,10 +80,14 @@ public class SysUserOnlineController extends BaseController
     /**
      * 强退用户
      */
+    @ApiOperation("强退用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "tokenId", value = "tokenId", dataType = "String", dataTypeClass = String.class)
+    })
     @PreAuthorize("@ss.hasPermi('monitor:online:forceLogout')")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
-    public AjaxResult forceLogout(@PathVariable String tokenId)
+    public AjaxResult forceLogout(@ApiParam(" tokenId") @PathVariable String tokenId)
     {
         redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + tokenId);
         return success();

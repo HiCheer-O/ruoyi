@@ -3,6 +3,8 @@ package com.ruoyi.web.controller.system;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -30,6 +32,7 @@ import com.ruoyi.system.service.ISysDictTypeService;
  * 
  * @author ruoyi
  */
+@Api(tags = "数据字典信息控制器")
 @RestController
 @RequestMapping("/system/dict/data")
 public class SysDictDataController extends BaseController
@@ -40,19 +43,21 @@ public class SysDictDataController extends BaseController
     @Autowired
     private ISysDictTypeService dictTypeService;
 
+    @ApiOperation("字典列表")
     @PreAuthorize("@ss.hasPermi('system:dict:list')")
     @GetMapping("/list")
-    public TableDataInfo list(SysDictData dictData)
+    public TableDataInfo list(@ApiParam("字典对象") SysDictData dictData)
     {
         startPage();
         List<SysDictData> list = dictDataService.selectDictDataList(dictData);
         return getDataTable(list);
     }
 
+    @ApiOperation("字典数据导出")
     @Log(title = "字典数据", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('system:dict:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, SysDictData dictData)
+    public void export(HttpServletResponse response, @ApiParam("字典对象") SysDictData dictData)
     {
         List<SysDictData> list = dictDataService.selectDictDataList(dictData);
         ExcelUtil<SysDictData> util = new ExcelUtil<SysDictData>(SysDictData.class);
@@ -62,9 +67,13 @@ public class SysDictDataController extends BaseController
     /**
      * 查询字典数据详细
      */
+    @ApiOperation("查询字典数据详细")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dictCode", value = "字典Code", dataType = "Long", paramType = "path", dataTypeClass = Long.class)
+    })
     @PreAuthorize("@ss.hasPermi('system:dict:query')")
     @GetMapping(value = "/{dictCode}")
-    public AjaxResult getInfo(@PathVariable Long dictCode)
+    public AjaxResult getInfo(@ApiParam("字典Code") @PathVariable Long dictCode)
     {
         return success(dictDataService.selectDictDataById(dictCode));
     }
@@ -72,8 +81,12 @@ public class SysDictDataController extends BaseController
     /**
      * 根据字典类型查询字典数据信息
      */
+    @ApiOperation("根据字典类型查询字典数据信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dictType", value = "字典类型", dataType = "String", paramType = "path", dataTypeClass = String.class)
+    })
     @GetMapping(value = "/type/{dictType}")
-    public AjaxResult dictType(@PathVariable String dictType)
+    public AjaxResult dictType(@ApiParam("字典类型") @PathVariable String dictType)
     {
         List<SysDictData> data = dictTypeService.selectDictDataByType(dictType);
         if (StringUtils.isNull(data))
@@ -86,10 +99,11 @@ public class SysDictDataController extends BaseController
     /**
      * 新增字典类型
      */
+    @ApiOperation("新增字典类型")
     @PreAuthorize("@ss.hasPermi('system:dict:add')")
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Validated @RequestBody SysDictData dict)
+    public AjaxResult add(@ApiParam("字典对象") @Validated @RequestBody SysDictData dict)
     {
         dict.setCreateBy(getUsername());
         return toAjax(dictDataService.insertDictData(dict));
@@ -98,10 +112,11 @@ public class SysDictDataController extends BaseController
     /**
      * 修改保存字典类型
      */
+    @ApiOperation("修改保存字典类型")
     @PreAuthorize("@ss.hasPermi('system:dict:edit')")
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@Validated @RequestBody SysDictData dict)
+    public AjaxResult edit(@ApiParam("字典对象") @Validated @RequestBody SysDictData dict)
     {
         dict.setUpdateBy(getUsername());
         return toAjax(dictDataService.updateDictData(dict));
@@ -110,10 +125,14 @@ public class SysDictDataController extends BaseController
     /**
      * 删除字典类型
      */
+    @ApiOperation("删除字典类型")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dictCodes", value = "字典Ids", dataType = "Long[]", paramType = "path", dataTypeClass = Long[].class)
+    })
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictCodes}")
-    public AjaxResult remove(@PathVariable Long[] dictCodes)
+    public AjaxResult remove(@ApiParam("字典Ids") @PathVariable Long[] dictCodes)
     {
         dictDataService.deleteDictDataByIds(dictCodes);
         return success();
